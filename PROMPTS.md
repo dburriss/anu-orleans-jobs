@@ -10,6 +10,7 @@ Create a new C# project named Anu.Jobs. This project will contain the core libra
 2. Create a tests folder for unit tests.
 3. Use the command line to create sln file in the repo root directory.
 4. Add a new project called Anu.Jobs and add it to the sln file
+5. Add a test project called Anu.Jobs.BuildingTests and add it to the sln file (use XUnit)
 
 ## IJob Interface Implementation
 
