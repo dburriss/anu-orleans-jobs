@@ -12,11 +12,21 @@ Create a new C# project named Anu.Jobs. This project will contain the core libra
 4. Add a new project called Anu.Jobs and add it to the sln file
 5. Add a test project called Anu.Jobs.BuildingTests and add it to the sln file (use XUnit)
 
+## JobContext
+
+Create the JobContext class.
+
+1. JobContext is a simple data class and does not need an interface.
+2. JobContext should have a JobName property.
+3. JobContext should have a RunId property.
+4. JobContext should have a start time property.
+5. JobContext should have a cancellation token property.
+
 ## IJob Interface Implementation
 
 Create the IJob interface for Anu.Jobs that defines the contract for job execution. The interface should:
 
-1. Have an Execute method that takes an IJobContext and returns a Task
+1. Have an Execute method that takes an JobContext and returns a Task
 2. Have a Compensate method for handling failures
 3. Include XML documentation
 
