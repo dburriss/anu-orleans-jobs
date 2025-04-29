@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-
 namespace Anu.Jobs
 {
     /// <summary>
@@ -12,13 +10,13 @@ namespace Anu.Jobs
         /// </summary>
         /// <param name="context">The context containing information and services needed for job execution.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        Task Execute(IJobContext context);
+        Task Execute(JobContext context);
 
         /// <summary>
         /// Compensates for a failed job execution by performing cleanup or rollback operations.
         /// </summary>
         /// <param name="context">The context containing information and services needed for compensation.</param>
         /// <returns>A task representing the asynchronous compensation operation.</returns>
-        Task Compensate(IJobContext context);
+        Task Compensate(JobContext context);
     }
 }

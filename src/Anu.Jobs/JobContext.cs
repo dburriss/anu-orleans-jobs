@@ -1,12 +1,9 @@
-using System;
-using System.Threading;
-
 namespace Anu.Jobs
 {
     /// <summary>
     /// Provides context information for job execution and compensation.
     /// </summary>
-    public class JobContext : IJobContext
+    public class JobContext
     {
         /// <summary>
         /// Gets or sets the name of the job.
@@ -41,7 +38,8 @@ namespace Anu.Jobs
         /// Initializes a new instance of the <see cref="JobContext"/> class with a specified job name.
         /// </summary>
         /// <param name="jobName">The name of the job.</param>
-        public JobContext(string jobName) : this()
+        public JobContext(string jobName)
+            : this()
         {
             JobName = jobName;
         }
@@ -51,7 +49,8 @@ namespace Anu.Jobs
         /// </summary>
         /// <param name="jobName">The name of the job.</param>
         /// <param name="cancellationToken">The cancellation token for the job.</param>
-        public JobContext(string jobName, CancellationToken cancellationToken) : this(jobName)
+        public JobContext(string jobName, CancellationToken cancellationToken)
+            : this(jobName)
         {
             CancellationToken = cancellationToken;
         }
