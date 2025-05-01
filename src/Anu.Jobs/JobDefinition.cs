@@ -28,6 +28,12 @@ public class JobDefinition
     [Id(2)]
     public Dictionary<string, object> InputParameters { get; set; } =
         new Dictionary<string, object>();
+        
+    /// <summary>
+    /// Gets or sets the maximum number of retry attempts for this job.
+    /// </summary>
+    [Id(3)]
+    public int MaxRetries { get; set; } = 3;
 
     /// <summary>
     /// Creates a new instance of the JobDefinition class.
@@ -56,5 +62,18 @@ public class JobDefinition
         JobName = jobName;
         JobType = jobType;
         InputParameters = inputParameters ?? new Dictionary<string, object>();
+    }
+    
+    /// <summary>
+    /// Creates a new instance of the JobDefinition class with the specified name, type, input parameters, and max retries.
+    /// </summary>
+    /// <param name="jobName">The name of the job.</param>
+    /// <param name="jobType">The type of the job.</param>
+    /// <param name="inputParameters">The input parameters for the job.</param>
+    /// <param name="maxRetries">The maximum number of retry attempts.</param>
+    public JobDefinition(string jobName, string jobType, Dictionary<string, object> inputParameters, int maxRetries)
+        : this(jobName, jobType, inputParameters)
+    {
+        MaxRetries = maxRetries;
     }
 }
