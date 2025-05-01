@@ -8,12 +8,12 @@ namespace Anu.Jobs
         /// <summary>
         /// Gets or sets the name of the job.
         /// </summary>
-        public string JobName { get; set; }
+        public required string JobName { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier for this job run.
         /// </summary>
-        public string RunId { get; set; }
+        public required string RunId { get; set; }
 
         /// <summary>
         /// Gets or sets the time when the job started.
