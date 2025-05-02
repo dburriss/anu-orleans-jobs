@@ -14,17 +14,28 @@ namespace Anu.Jobs
     [GenerateSerializer]
     public class JobTrigger
     {
+        // Unique identifier for this trigger
+        [Id(0)]
+        public Guid Id { get; set; } = Guid.NewGuid();
+        
         // Trigger type
+        [Id(1)]
         public TriggerType Type { get; set; } = TriggerType.Manual;
         
         // Scheduling configuration
+        [Id(2)]
         public DateTime? ScheduledTime { get; set; }        // For OneTime
+        [Id(3)]
         public TimeSpan? RecurringInterval { get; set; }    // For Interval
+        [Id(4)]
         public string? CronExpression { get; set; }         // For Cron
         
         // Retry configuration
+        [Id(5)]
         public int MaxRetries { get; set; } = 0;
+        [Id(6)]
         public TimeSpan RetryDelay { get; set; } = TimeSpan.FromSeconds(30);
+        [Id(7)]
         public bool UseExponentialBackoff { get; set; } = false;
         
         // Validation method
