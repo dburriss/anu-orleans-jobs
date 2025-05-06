@@ -153,29 +153,3 @@ public class StageTransition
     [Id(3)]
     public string? Reason { get; set; }
 }
-
-/// <summary>
-/// Types of triggers that can initiate a job.
-/// </summary>
-public enum TriggerType
-{
-    /// <summary>
-    /// Job was manually triggered.
-    /// </summary>
-    Manual,
-
-    /// <summary>
-    /// Job was triggered by a schedule.
-    /// </summary>
-    Scheduled,
-
-    /// <summary>
-    /// Job was triggered by the completion of another job.
-    /// </summary>
-    DependencyCompleted,
-
-    /// <summary>
-    /// Job was triggered by a system event.
-    /// </summary>
-    SystemInitiated,
-}

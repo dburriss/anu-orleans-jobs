@@ -1,5 +1,3 @@
-using Orleans;
-
 namespace Anu.Jobs;
 
 /// <summary>
@@ -13,19 +11,23 @@ public class JobState
     /// The definition of the job being executed.
     /// </summary>
     [Id(0)]
-    public JobDefinition JobDefinition { get; set; } = new JobDefinition();
+    public required JobDefinition JobDefinition { get; set; }
 
     /// <summary>
     /// Information about the current run of this job.
     /// </summary>
     [Id(1)]
-    public JobRunInfo CurrentRun { get; set; } = new JobRunInfo();
+    public JobRunInfo CurrentRun { get; internal set; } = new JobRunInfo();
 
     /// <summary>
     /// Information about the previous run of this job (for recurring jobs).
     /// </summary>
     [Id(2)]
-    public JobRunInfo? PreviousRun { get; set; }
+    public JobRunInfo? PreviousRun { get; internal set; }
+
+    /// <summary>
+    /// Time of next scheduled execution.
+    public DateTime ScheduledTime { get; internal set; }
 
     /// <summary>
     /// Creates a JobContext from this state for passing to the job implementation.
@@ -37,8 +39,16 @@ public class JobState
             JobName = JobDefinition.JobName,
             RunId = CurrentRun.RunId.ToString(),
             StartTime = CurrentRun.StartedAt ?? DateTime.UtcNow,
-            CancellationToken = cancellationToken
+            CancellationToken = cancellationToken,
         };
+    }
+
+    /// <summary>
+    /// Marks the job as started.
+    /// </summary>
+    public void MarkAsStarted()
+    {
+        CurrentRun.RecordStageTransition(JobStage.Running, "Job started");
     }
 
     /// <summary>
@@ -54,8 +64,11 @@ public class JobState
 
         CurrentRun.RetryCount++;
         CurrentRun.LastRetryAt = DateTime.UtcNow;
-        CurrentRun.RecordStageTransition(JobStage.Retrying, $"Retry attempt {CurrentRun.RetryCount} of {JobDefinition.MaxRetries}");
-        
+        CurrentRun.RecordStageTransition(
+            JobStage.Retrying,
+            $"Retry attempt {CurrentRun.RetryCount} of {JobDefinition.MaxRetries}"
+        );
+
         return true;
     }
 
@@ -66,7 +79,10 @@ public class JobState
     public void MarkAsFailed(Exception exception)
     {
         CurrentRun.RecordError(exception);
-        CurrentRun.RecordStageTransition(JobStage.Failed, $"Failed after {CurrentRun.RetryCount} retry attempts");
+        CurrentRun.RecordStageTransition(
+            JobStage.Failed,
+            $"Failed after {CurrentRun.RetryCount} retry attempts"
+        );
     }
 
     /// <summary>

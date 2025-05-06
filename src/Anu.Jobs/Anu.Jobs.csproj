@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Orleans.Runtime" Version="9.1.2" />
+    <PackageReference Include="Microsoft.Orleans.Reminders" Version="9.1.2" />
   </ItemGroup>
 
 </Project>
