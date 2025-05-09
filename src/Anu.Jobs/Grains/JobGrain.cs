@@ -57,7 +57,7 @@ public class JobGrain : Grain<JobState>, IJobGrain, IRemindable
             }
 
             _logger.LogInformation(
-                "Scheduling job {JobId} to run at {ExecutionTime}",
+                "Scheduling job {JobName} to run at {ExecutionTime}",
                 this.GetPrimaryKey(),
                 nextExecution.Value
             );
@@ -88,7 +88,7 @@ public class JobGrain : Grain<JobState>, IJobGrain, IRemindable
         else
         {
             _logger.LogWarning(
-                "Could not determine next execution time for job {JobId}",
+                "Could not determine next execution time for job {JobName}",
                 this.GetPrimaryKey()
             );
         }
@@ -97,7 +97,7 @@ public class JobGrain : Grain<JobState>, IJobGrain, IRemindable
     public async Task CancelExecution(string reason)
     {
         _logger.LogInformation(
-            "Cancelling job {JobId}: {Reason}",
+            "Cancelling job {JobName}: {Reason}",
             State.JobDefinition.JobName,
             reason
         );
@@ -277,7 +277,7 @@ public class JobGrain : Grain<JobState>, IJobGrain, IRemindable
     public async Task ReceiveReminder(string reminderName, TickStatus status)
     {
         _logger.LogInformation(
-            "Received reminder {ReminderName} for job {JobId}",
+            "Received reminder {ReminderName} for job {JobName}",
             reminderName,
             State.JobDefinition.JobName
         );
