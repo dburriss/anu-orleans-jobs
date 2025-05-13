@@ -44,80 +44,6 @@ public class JobGrain : Grain<JobState>, IJobGrain, IRemindable
         await WriteStateAsync();
     }
 
-    public async Task ScheduleExecution(DateTime? scheduledTime = null)
-    {
-        // Calculate when to run the job
-        var nextExecution = scheduledTime ?? State.JobDefinition.GetNextExecutionTime();
-        if (nextExecution.HasValue)
-        {
-            var delay = nextExecution.Value - DateTime.UtcNow;
-            if (delay < TimeSpan.Zero)
-            {
-                delay = TimeSpan.Zero;
-            }
-
-            _logger.LogInformation(
-                "Scheduling job {JobName} to run at {ExecutionTime}",
-                this.GetPrimaryKey(),
-                nextExecution.Value
-            );
-
-            // Clear any existing reminder
-            try
-            {
-                var reminder = await this.GetReminder(ExecutionReminderName);
-                if (reminder != null)
-                    await this.UnregisterReminder(reminder);
-            }
-            catch (Exception ex) when (ex.Message.Contains("not found"))
-            {
-                // Reminder doesn't exist, which is fine
-            }
-
-            // Register a new reminder
-            await this.RegisterOrUpdateReminder(
-                ExecutionReminderName,
-                delay,
-                TimeSpan.FromMilliseconds(-1) // Don't repeat
-            );
-
-            // Update state
-            State.ScheduledTime = nextExecution.Value;
-            await WriteStateAsync();
-        }
-        else
-        {
-            _logger.LogWarning(
-                "Could not determine next execution time for job {JobName}",
-                this.GetPrimaryKey()
-            );
-        }
-    }
-
-    public async Task CancelExecution(string reason)
-    {
-        _logger.LogInformation(
-            "Cancelling job {JobName}: {Reason}",
-            State.JobDefinition.JobName,
-            reason
-        );
-
-        // Clear any existing reminder
-        try
-        {
-            var reminder = await this.GetReminder(ExecutionReminderName);
-            if (reminder != null)
-                await this.UnregisterReminder(reminder);
-        }
-        catch (Exception ex) when (ex.Message.Contains("not found"))
-        {
-            // Reminder doesn't exist, which is fine
-        }
-
-        State.MarkAsCancelled(reason);
-        await WriteStateAsync();
-    }
-
     public async Task TriggerExecution()
     {
         _logger.LogInformation(
@@ -126,7 +52,7 @@ public class JobGrain : Grain<JobState>, IJobGrain, IRemindable
         );
 
         // Get the job implementation
-        var jobType = Type.GetType(State.JobDefinition.JobType);
+        var jobType = State.JobDefinition.JobType;
         if (jobType == null)
         {
             _logger.LogError("Job type {JobType} not found", State.JobDefinition.JobType);
@@ -224,7 +150,7 @@ public class JobGrain : Grain<JobState>, IJobGrain, IRemindable
     private async Task ExecuteCompensation()
     {
         // Get the job implementation
-        var jobType = Type.GetType(State.JobDefinition.JobType);
+        var jobType = State.JobDefinition.JobType;
         if (jobType == null)
         {
             _logger.LogError(
@@ -272,6 +198,91 @@ public class JobGrain : Grain<JobState>, IJobGrain, IRemindable
             );
             await WriteStateAsync();
         }
+    }
+
+    public async Task ScheduleExecution(DateTime? scheduledTime = null)
+    {
+        // Calculate when to run the job
+        var nextExecution = scheduledTime ?? State.JobDefinition.GetNextExecutionTime();
+        if (nextExecution.HasValue)
+        {
+            var delay = nextExecution.Value - DateTime.UtcNow;
+            if (delay < TimeSpan.Zero)
+            {
+                delay = TimeSpan.Zero;
+            }
+
+            _logger.LogInformation(
+                "Scheduling job {JobName} to run at {ExecutionTime}",
+                this.GetPrimaryKey(),
+                nextExecution.Value
+            );
+
+            // Clear any existing reminder
+            try
+            {
+                var reminder = await this.GetReminder(ExecutionReminderName);
+                if (reminder != null)
+                    await this.UnregisterReminder(reminder);
+            }
+            catch (Exception ex) when (ex.Message.Contains("not found"))
+            {
+                // Reminder doesn't exist, which is fine
+            }
+
+            // Register a new reminder
+            await this.RegisterOrUpdateReminder(
+                ExecutionReminderName,
+                delay,
+                TimeSpan.FromMilliseconds(-1) // Don't repeat
+            );
+
+            // Update state
+            State.ScheduledTime = nextExecution.Value;
+            await WriteStateAsync();
+        }
+        else
+        {
+            _logger.LogWarning(
+                "Could not determine next execution time for job {JobName}",
+                this.GetPrimaryKey()
+            );
+        }
+    }
+
+    public async Task ScheduleRecurringExecution(TimeSpan period)
+    {
+        _logger.LogInformation(
+            "Scheduling recurring execution on period {Period} for job {JobName}",
+            period,
+            State.JobDefinition.JobName
+        );
+
+        await this.RegisterOrUpdateReminder(ExecutionReminderName, TimeSpan.Zero, period);
+    }
+
+    public async Task CancelExecution(string reason)
+    {
+        _logger.LogInformation(
+            "Cancelling job {JobName}: {Reason}",
+            State.JobDefinition.JobName,
+            reason
+        );
+
+        // Clear any existing reminder
+        try
+        {
+            var reminder = await this.GetReminder(ExecutionReminderName);
+            if (reminder != null)
+                await this.UnregisterReminder(reminder);
+        }
+        catch (Exception ex) when (ex.Message.Contains("not found"))
+        {
+            // Reminder doesn't exist, which is fine
+        }
+
+        State.MarkAsCancelled(reason);
+        await WriteStateAsync();
     }
 
     public async Task ReceiveReminder(string reminderName, TickStatus status)

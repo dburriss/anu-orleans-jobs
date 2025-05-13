@@ -13,14 +13,14 @@ public class JobDefinition
     /// Gets or sets the name of the job.
     /// </summary>
     [Id(0)]
-    public required string JobName { get; set; }
+    public string JobName { get; set; }
 
     /// <summary>
     /// Gets or sets the type of the job.
     /// This should be the fully qualified name of a class implementing IJob.
     /// </summary>
     [Id(1)]
-    public required string JobType { get; set; }
+    public Type JobType { get; set; }
 
     /// <summary>
     /// Gets or sets the input parameters for the job.
@@ -28,13 +28,13 @@ public class JobDefinition
     [Id(2)]
     public Dictionary<string, object> InputParameters { get; set; } =
         new Dictionary<string, object>();
-        
+
     /// <summary>
     /// Gets or sets the maximum number of retry attempts for this job.
     /// </summary>
     [Id(3)]
     public int MaxRetries { get; set; } = 3;
-    
+
     /// <summary>
     /// Gets or sets the triggers that can initiate this job.
     /// </summary>
@@ -49,40 +49,45 @@ public class JobDefinition
     /// <summary>
     /// Creates a new instance of the JobDefinition class with the specified name and type.
     /// </summary>
-    /// <param name="jobName">The name of the job.</param>
     /// <param name="jobType">The type of the job.</param>
-    public JobDefinition(string jobName, string jobType)
+    /// <param name="jobName">The name of the job.</param>
+    public JobDefinition(Type jobType, string jobName)
     {
-        JobName = jobName;
         JobType = jobType;
+        JobName = jobName;
     }
 
     /// <summary>
     /// Creates a new instance of the JobDefinition class with the specified name, type, and input parameters.
     /// </summary>
-    /// <param name="jobName">The name of the job.</param>
     /// <param name="jobType">The type of the job.</param>
+    /// <param name="jobName">The name of the job.</param>
     /// <param name="inputParameters">The input parameters for the job.</param>
-    public JobDefinition(string jobName, string jobType, Dictionary<string, object> inputParameters)
+    public JobDefinition(Type jobType, string jobName, Dictionary<string, object> inputParameters)
     {
-        JobName = jobName;
         JobType = jobType;
+        JobName = jobName;
         InputParameters = inputParameters ?? new Dictionary<string, object>();
     }
-    
+
     /// <summary>
     /// Creates a new instance of the JobDefinition class with the specified name, type, input parameters, and max retries.
     /// </summary>
-    /// <param name="jobName">The name of the job.</param>
     /// <param name="jobType">The type of the job.</param>
+    /// <param name="jobName">The name of the job.</param>
     /// <param name="inputParameters">The input parameters for the job.</param>
     /// <param name="maxRetries">The maximum number of retry attempts.</param>
-    public JobDefinition(string jobName, string jobType, Dictionary<string, object> inputParameters, int maxRetries)
-        : this(jobName, jobType, inputParameters)
+    public JobDefinition(
+        Type jobType,
+        string jobName,
+        Dictionary<string, object> inputParameters,
+        int maxRetries
+    )
+        : this(jobType, jobName, inputParameters)
     {
         MaxRetries = maxRetries;
     }
-    
+
     /// <summary>
     /// Adds a trigger to this job definition.
     /// </summary>
@@ -91,7 +96,7 @@ public class JobDefinition
     {
         Triggers.Add(trigger);
     }
-    
+
     /// <summary>
     /// Removes a trigger by its ID.
     /// </summary>
@@ -101,7 +106,7 @@ public class JobDefinition
     {
         return Triggers.RemoveAll(t => t.Id == triggerId) > 0;
     }
-    
+
     /// <summary>
     /// Gets a trigger by its ID.
     /// </summary>
@@ -111,7 +116,7 @@ public class JobDefinition
     {
         return Triggers.Find(t => t.Id == triggerId);
     }
-    
+
     /// <summary>
     /// Calculates the next execution time across all triggers.
     /// </summary>
@@ -120,18 +125,20 @@ public class JobDefinition
     public DateTime? GetNextExecutionTime(DateTime? lastExecution = null)
     {
         DateTime? nextTime = null;
-        
+
         foreach (var trigger in Triggers)
         {
             var triggerNextTime = trigger.GetNextExecutionTime(lastExecution);
-            
-            if (triggerNextTime.HasValue && 
-                (!nextTime.HasValue || triggerNextTime.Value < nextTime.Value))
+
+            if (
+                triggerNextTime.HasValue
+                && (!nextTime.HasValue || triggerNextTime.Value < nextTime.Value)
+            )
             {
                 nextTime = triggerNextTime;
             }
         }
-        
+
         return nextTime;
     }
 }
