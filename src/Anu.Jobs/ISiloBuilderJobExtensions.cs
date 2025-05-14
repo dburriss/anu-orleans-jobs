@@ -1,16 +1,11 @@
-using System;
-using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
-using Orleans;
-using Orleans.Hosting;
-using Orleans.Runtime;
 
 namespace Anu.Jobs;
 
 public static class ISiloBuilderJobExtensions
 {
-    public static ISiloBuilder UseJobs(this ISiloBuilder builder, params Assembly[] jobAssemblies)
+    public static ISiloBuilder AddJobs(this ISiloBuilder builder, params Assembly[] jobAssemblies)
     {
         var assemblies = jobAssemblies is null
             ? AppDomain.CurrentDomain.GetAssemblies()
@@ -31,7 +26,7 @@ public static class ISiloBuilderJobExtensions
         return builder;
     }
 
-    public static ISiloBuilder UseRecurringJob(
+    public static ISiloBuilder UseJob(
         this ISiloBuilder host,
         Type jobType,
         TimerOptions options
@@ -65,7 +60,7 @@ public static class ISiloBuilderJobExtensions
     )
     {
         var intervalOptions = new TimerOptions { Interval = interval };
-        return host.UseRecurringJob(jobType, intervalOptions);
+        return host.UseJob(jobType, intervalOptions);
     }
 
     public static ISiloBuilder UseRecurringJob<TJob>(this ISiloBuilder host, TimeSpan interval)
@@ -73,5 +68,17 @@ public static class ISiloBuilderJobExtensions
     {
         var jobType = typeof(TJob);
         return host.UseRecurringJob(jobType, interval);
+    }
+
+    public static ISiloBuilder UseOneTimeJob<TJob>(
+        this ISiloBuilder host,
+        TimeSpan? delay
+    )
+        where TJob : IJob
+    {
+        var jobType = typeof(TJob);
+        var d = delay ?? TimeSpan.FromSeconds(60);
+        var intervalOptions = new TimerOptions { Interval = TimeSpan.Zero, Delay = d };
+        return host.UseJob(jobType, intervalOptions);
     }
 }
