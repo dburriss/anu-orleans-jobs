@@ -4,6 +4,7 @@ This document provides prompts for implementing the various components of the An
 
 ## Create Anu.Jobs project
 
+Done.
 Create a new C# project named Anu.Jobs. This project will contain the core library for job scheduling and execution.
 
 1. Create a src folder for the source code.
@@ -14,6 +15,7 @@ Create a new C# project named Anu.Jobs. This project will contain the core libra
 
 ## JobContext
 
+Done.
 Create the JobContext class.
 
 1. JobContext is a simple data class and does not need an interface.
