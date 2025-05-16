@@ -1,3 +1,4 @@
+using Anu.Jobs;
 using Orleans.Runtime;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -5,7 +6,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseOrleans(static siloBuilder =>
 {
     siloBuilder.UseLocalhostClustering();
-    siloBuilder.AddMemoryGrainStorage("default");
+    siloBuilder.AddMemoryGrainStorageAsDefault();
+    siloBuilder.UseInMemoryReminderService();
+
+    siloBuilder.AddJobs(typeof(OneTimeJob).Assembly);
+    siloBuilder.UseOneTimeJob<OneTimeJob>();
 });
 
 // Add services to the container.
@@ -35,3 +40,18 @@ app.MapGet(
     .WithOpenApi();
 
 app.Run();
+
+public class OneTimeJob : IJob
+{
+    public Task Execute(JobContext context)
+    {
+        Console.WriteLine("Executing OneTimeJob...");
+        return Task.CompletedTask;
+    }
+
+    public Task Compensate(JobContext context)
+    {
+        Console.WriteLine("Compensating OneTimeJob...");
+        return Task.CompletedTask;
+    }
+}
