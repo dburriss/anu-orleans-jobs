@@ -18,7 +18,7 @@ public class JobContext
     /// <summary>
     /// Gets or sets the time when the job started.
     /// </summary>
-    public DateTime StartTime { get; set; }
+    public DateTimeOffset StartTime { get; set; }
 
     /// <summary>
     /// Gets or sets the cancellation token for the job.

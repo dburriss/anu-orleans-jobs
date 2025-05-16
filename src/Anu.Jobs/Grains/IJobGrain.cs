@@ -1,5 +1,4 @@
 namespace Anu.Jobs.Grains;
-
 public interface IJobGrain : IGrainWithStringKey, IRemindable
 {
     Task<JobState> GetState();
@@ -7,8 +6,8 @@ public interface IJobGrain : IGrainWithStringKey, IRemindable
 
     // Job lifecycle management
     Task Initialize(JobDefinition definition);
-    Task ScheduleExecution(DateTime? scheduledTime = null);
-    Task ScheduleRecurringExecution(TimeSpan period);
+    Task ScheduleExecution(DateTimeOffset? scheduledTime = null);
     Task CancelExecution(string reason);
     Task TriggerExecution(); // Called manually or by a reminder
+    Task ScheduleRecurringExecution(TimeSpan period);
 }

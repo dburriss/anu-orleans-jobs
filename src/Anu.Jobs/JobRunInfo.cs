@@ -42,31 +42,31 @@ public class JobRunInfo
     /// When the last retry was attempted.
     /// </summary>
     [Id(5)]
-    public DateTime? LastRetryAt { get; set; }
+    public DateTimeOffset? LastRetryAt { get; set; }
 
     /// <summary>
     /// When the job was created/scheduled.
     /// </summary>
     [Id(6)]
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTimeOffset CreatedAt { get; set; } = DateTime.UtcNow;
 
     /// <summary>
     /// When the job started executing.
     /// </summary>
     [Id(7)]
-    public DateTime? StartedAt { get; set; }
+    public DateTimeOffset? StartedAt { get; set; }
 
     /// <summary>
     /// When the job was last updated.
     /// </summary>
     [Id(8)]
-    public DateTime? LastUpdatedAt { get; set; }
+    public DateTimeOffset? LastUpdatedAt { get; set; }
 
     /// <summary>
     /// When the job completed (successfully or not).
     /// </summary>
     [Id(9)]
-    public DateTime? CompletedAt { get; set; }
+    public DateTimeOffset? CompletedAt { get; set; }
 
     /// <summary>
     /// Information about any error that occurred.
@@ -89,7 +89,7 @@ public class JobRunInfo
         {
             PreviousStage = Stage,
             NewStage = newStage,
-            TransitionTime = DateTime.UtcNow,
+            TransitionTime = DateTimeOffset.UtcNow,
             Reason = reason,
         };
 
@@ -145,7 +145,7 @@ public class StageTransition
     /// When the transition occurred.
     /// </summary>
     [Id(2)]
-    public DateTime TransitionTime { get; set; }
+    public DateTimeOffset TransitionTime { get; set; }
 
     /// <summary>
     /// Optional reason for the transition.

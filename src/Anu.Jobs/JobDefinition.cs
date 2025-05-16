@@ -122,9 +122,9 @@ public class JobDefinition
     /// </summary>
     /// <param name="lastExecution">The time of the last execution, if any.</param>
     /// <returns>The earliest next execution time across all triggers, or null if no triggers are scheduled.</returns>
-    public DateTime? GetNextExecutionTime(DateTime? lastExecution = null)
+    public DateTimeOffset? GetNextExecutionTime(DateTimeOffset? lastExecution = null)
     {
-        DateTime? nextTime = null;
+        DateTimeOffset? nextTime = null;
 
         foreach (var trigger in Triggers)
         {

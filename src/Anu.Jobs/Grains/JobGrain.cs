@@ -1,15 +1,11 @@
-using System;
-using System.Threading.Tasks;
-using Anu.Jobs;
 using Microsoft.Extensions.Logging;
-using Orleans;
-using Orleans.Runtime;
 
 namespace Anu.Jobs.Grains;
 
 public class JobGrain : Grain<JobState>, IJobGrain, IRemindable
 {
     private readonly IJobRunner _jobRunner;
+    private readonly string _name;
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<JobGrain> _logger;
     private const string ExecutionReminderName = "JobExecution";
@@ -19,6 +15,7 @@ public class JobGrain : Grain<JobState>, IJobGrain, IRemindable
         _serviceProvider = serviceProvider;
         _logger = logger;
         _jobRunner = new JobRunner();
+        _name = this.GetPrimaryKeyString();
     }
 
     public Task<JobState> GetState()
@@ -200,13 +197,13 @@ public class JobGrain : Grain<JobState>, IJobGrain, IRemindable
         }
     }
 
-    public async Task ScheduleExecution(DateTime? scheduledTime = null)
+    public async Task ScheduleExecution(DateTimeOffset? scheduledTime = null)
     {
         // Calculate when to run the job
         var nextExecution = scheduledTime ?? State.JobDefinition.GetNextExecutionTime();
         if (nextExecution.HasValue)
         {
-            var delay = nextExecution.Value - DateTime.UtcNow;
+            var delay = nextExecution.Value - DateTimeOffset.UtcNow;
             if (delay < TimeSpan.Zero)
             {
                 delay = TimeSpan.Zero;
@@ -214,7 +211,7 @@ public class JobGrain : Grain<JobState>, IJobGrain, IRemindable
 
             _logger.LogInformation(
                 "Scheduling job {JobName} to run at {ExecutionTime}",
-                this.GetPrimaryKey(),
+                _name,
                 nextExecution.Value
             );
 
@@ -227,6 +224,7 @@ public class JobGrain : Grain<JobState>, IJobGrain, IRemindable
             }
             catch (Exception ex) when (ex.Message.Contains("not found"))
             {
+                throw;
                 // Reminder doesn't exist, which is fine
             }
 
@@ -243,10 +241,7 @@ public class JobGrain : Grain<JobState>, IJobGrain, IRemindable
         }
         else
         {
-            _logger.LogWarning(
-                "Could not determine next execution time for job {JobName}",
-                this.GetPrimaryKey()
-            );
+            _logger.LogWarning("Could not determine next execution time for job {JobName}", _name);
         }
     }
 

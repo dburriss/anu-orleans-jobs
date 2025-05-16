@@ -27,7 +27,7 @@ public class JobState
 
     /// <summary>
     /// Time of next scheduled execution.
-    public DateTime ScheduledTime { get; internal set; }
+    public DateTimeOffset ScheduledTime { get; internal set; }
 
     /// <summary>
     /// Creates a JobContext from this state for passing to the job implementation.
@@ -38,7 +38,7 @@ public class JobState
         {
             JobName = JobDefinition.JobName,
             RunId = CurrentRun.RunId.ToString(),
-            StartTime = CurrentRun.StartedAt ?? DateTime.UtcNow,
+            StartTime = CurrentRun.StartedAt ?? DateTimeOffset.UtcNow,
             CancellationToken = cancellationToken,
         };
     }

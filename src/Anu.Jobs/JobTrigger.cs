@@ -24,7 +24,7 @@ public class JobTrigger
 
     // Scheduling configuration
     [Id(2)]
-    public DateTime? ScheduledTime { get; set; } // For OneTime
+    public DateTimeOffset? ScheduledTime { get; set; } // For OneTime
 
     [Id(3)]
     public TimeSpan? RecurringInterval { get; set; } // For Interval
@@ -56,7 +56,7 @@ public class JobTrigger
     }
 
     // Calculate next execution time based on trigger type
-    public DateTime? GetNextExecutionTime(DateTime? lastExecution = null)
+    public DateTimeOffset? GetNextExecutionTime(DateTimeOffset? lastExecution = null)
     {
         return Type switch
         {
@@ -64,13 +64,13 @@ public class JobTrigger
             TriggerType.OneTime => ScheduledTime,
             TriggerType.Interval => lastExecution.HasValue
                 ? lastExecution.Value.Add(RecurringInterval.Value)
-                : DateTime.UtcNow.Add(RecurringInterval.Value),
+                : DateTimeOffset.UtcNow.Add(RecurringInterval.Value),
             TriggerType.Cron => CalculateNextCronExecution(lastExecution),
             _ => null,
         };
     }
 
-    private DateTime? CalculateNextCronExecution(DateTime? lastExecution)
+    private DateTimeOffset? CalculateNextCronExecution(DateTimeOffset? lastExecution)
     {
         // Implementation would use a cron parser library to calculate the next run
         // based on the CronExpression

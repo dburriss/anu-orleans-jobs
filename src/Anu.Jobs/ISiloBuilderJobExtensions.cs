@@ -32,10 +32,11 @@ public static class ISiloBuilderJobExtensions
         TimerOptions options
     )
     {
-        if (options.Interval < TimeSpan.FromMinutes(1))
+
+        if (options.TimerType == TimerType.Recurring && options.Interval < TimeSpan.FromMinutes(1))
         {
             throw new ArgumentException(
-                $"Interval must be at least 2 minute. Is {options.Interval}"
+                $"Interval must be at least 1 minute. Interval is {options.Interval}"
             );
         }
         host.ConfigureServices(services =>
@@ -46,7 +47,7 @@ public static class ISiloBuilderJobExtensions
                     sp,
                     jobType,
                     jobName,
-                    options.Interval
+                    options
                 );
             })
         );
@@ -59,7 +60,7 @@ public static class ISiloBuilderJobExtensions
         TimeSpan interval
     )
     {
-        var intervalOptions = new TimerOptions { Interval = interval };
+        var intervalOptions = new TimerOptions { Interval = interval, TimerType = TimerType.Recurring };
         return host.UseJob(jobType, intervalOptions);
     }
 
@@ -72,7 +73,7 @@ public static class ISiloBuilderJobExtensions
 
     public static ISiloBuilder UseOneTimeJob<TJob>(
         this ISiloBuilder host,
-        TimeSpan? delay
+        TimeSpan? delay = null
     )
         where TJob : IJob
     {
