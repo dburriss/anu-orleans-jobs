@@ -35,11 +35,6 @@ public class JobDefinition
     [Id(3)]
     public int MaxRetries { get; set; } = 3;
 
-    /// <summary>
-    /// Gets or sets the triggers that can initiate this job.
-    /// </summary>
-    [Id(4)]
-    public List<JobTrigger> Triggers { get; set; } = new List<JobTrigger>();
 
     /// <summary>
     /// Creates a new instance of the JobDefinition class.
@@ -88,57 +83,4 @@ public class JobDefinition
         MaxRetries = maxRetries;
     }
 
-    /// <summary>
-    /// Adds a trigger to this job definition.
-    /// </summary>
-    /// <param name="trigger">The trigger to add.</param>
-    public void AddTrigger(JobTrigger trigger)
-    {
-        Triggers.Add(trigger);
-    }
-
-    /// <summary>
-    /// Removes a trigger by its ID.
-    /// </summary>
-    /// <param name="triggerId">The ID of the trigger to remove.</param>
-    /// <returns>True if the trigger was found and removed; otherwise, false.</returns>
-    public bool RemoveTrigger(Guid triggerId)
-    {
-        return Triggers.RemoveAll(t => t.Id == triggerId) > 0;
-    }
-
-    /// <summary>
-    /// Gets a trigger by its ID.
-    /// </summary>
-    /// <param name="triggerId">The ID of the trigger to get.</param>
-    /// <returns>The trigger with the specified ID, or null if not found.</returns>
-    public JobTrigger? GetTrigger(Guid triggerId)
-    {
-        return Triggers.Find(t => t.Id == triggerId);
-    }
-
-    /// <summary>
-    /// Calculates the next execution time across all triggers.
-    /// </summary>
-    /// <param name="lastExecution">The time of the last execution, if any.</param>
-    /// <returns>The earliest next execution time across all triggers, or null if no triggers are scheduled.</returns>
-    public DateTimeOffset? GetNextExecutionTime(DateTimeOffset? lastExecution = null)
-    {
-        DateTimeOffset? nextTime = null;
-
-        foreach (var trigger in Triggers)
-        {
-            var triggerNextTime = trigger.GetNextExecutionTime(lastExecution);
-
-            if (
-                triggerNextTime.HasValue
-                && (!nextTime.HasValue || triggerNextTime.Value < nextTime.Value)
-            )
-            {
-                nextTime = triggerNextTime;
-            }
-        }
-
-        return nextTime;
-    }
 }

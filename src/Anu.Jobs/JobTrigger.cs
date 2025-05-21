@@ -94,6 +94,10 @@ public class JobTrigger
         return RetryDelay;
     }
 
+    // Last execution time for this trigger
+    [Id(8)]
+    public DateTimeOffset? LastExecution { get; set; }
+
     // Static factory methods for common trigger types
     public static JobTrigger CreateManualTrigger(int maxRetries = 0)
     {

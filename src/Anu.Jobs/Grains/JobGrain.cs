@@ -96,7 +96,7 @@ public class JobGrain : Grain<JobState>, IJobGrain, IRemindable
                 // Schedule a retry
                 var retryDelay =
                     State
-                        .JobDefinition.GetTrigger(State.CurrentRun.TriggerId)
+                        .Triggers.Get(State.CurrentRun.TriggerId)
                         ?.CalculateRetryDelay(State.CurrentRun.RetryCount)
                     ?? TimeSpan.FromMinutes(1); // Default retry delay
 
@@ -110,7 +110,7 @@ public class JobGrain : Grain<JobState>, IJobGrain, IRemindable
                 );
 
                 // If this is a recurring job, schedule the next execution
-                var nextExecution = State.JobDefinition.GetNextExecutionTime(
+                var nextExecution = State.Triggers.GetNextExecutionTime(
                     State.CurrentRun.CompletedAt
                 );
                 if (nextExecution.HasValue)

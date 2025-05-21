@@ -30,6 +30,12 @@ public class JobState
     public DateTimeOffset ScheduledTime { get; internal set; }
 
     /// <summary>
+    /// The triggers that can initiate this job.
+    /// </summary>
+    [Id(3)]
+    public Triggers Triggers { get; set; } = new Triggers();
+
+    /// <summary>
     /// Creates a JobContext from this state for passing to the job implementation.
     /// </summary>
     public JobContext CreateJobContext(CancellationToken cancellationToken = default)
