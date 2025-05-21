@@ -43,7 +43,8 @@ Provides contextual information to the job during execution, such as:
 Extension methods for the Orleans SiloBuilder to register and configure jobs:
 
 - `UseJobs()` - Register job assemblies
-- `UseRecurringJob<T>()` - Register a recurring job with a specified interval
+- `AddRecurringJob<T>()` - Register a recurring job with a specified interval
+- `AddOneTimeJob<T>()` - Register a job that runs  
 
 ### Job Triggers
 
@@ -51,6 +52,10 @@ Mechanisms to trigger job execution:
 
 - Timer-based triggers (recurring jobs)
 - Manual triggers
+- Once-off scheduled
+- Cron
+
+Triggers are stored on the state of the grain. This is then used to determine the next time the reminder needs to trigger. Triggering will need to happen with the TriggerId.
 
 ## Architecture
 
@@ -58,7 +63,7 @@ The architecture follows these principles:
 
 1. **Grain-based execution** - Jobs are executed within Orleans grains for reliability and distribution
 2. **Stateful tracking** - Job state is persisted within grain state
-3. **Pluggable scheduling** - Support for different scheduling mechanisms
+3. **Flexible scheduling** - Support for different scheduling mechanisms e.g. manual run, single scheduled, recurring on period, cron
 4. **Minimal dependencies** - Only depends on Orleans, not on the full Ez system
 
 ## Usage Flow
