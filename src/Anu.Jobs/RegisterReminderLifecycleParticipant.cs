@@ -30,8 +30,18 @@ internal class RegisterReminderLifecycleParticipant(
                         );
                     var grainFactory = serviceProvider.GetRequiredService<IJobBuilder>();
                     var jobGrain = await grainFactory.StartJobAsync(job.GetType(), jobName);
-                    if (options.TimerType == TimerType.OneTime)
+                    if (options.TimerType == TimerType.OneTime && options.Delay == TimeSpan.Zero)
                     {
+                        // Execute the job immediately
+                        Console.WriteLine($"Executing job {jobName} immediately...");
+                        await jobGrain.TriggerExecution();
+                    }
+                    else if (options.TimerType == TimerType.OneTime)
+                    {
+                        // Schedule the job for later execution
+                        Console.WriteLine(
+                            $"Scheduling job {jobName} for execution in {options.Delay}..."
+                        );
                         await jobGrain.ScheduleExecution(DateTimeOffset.UtcNow + options.Delay);
                     }
                     // else

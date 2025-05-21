@@ -9,6 +9,7 @@ public class JobGrain : Grain<JobState>, IJobGrain, IRemindable
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<JobGrain> _logger;
     private const string ExecutionReminderName = "JobExecution";
+    private TimeSpan MinimumDelay = TimeSpan.FromSeconds(61);
 
     public JobGrain(IServiceProvider serviceProvider, ILogger<JobGrain> logger)
     {
@@ -79,6 +80,7 @@ public class JobGrain : Grain<JobState>, IJobGrain, IRemindable
         try
         {
             var updatedState = await _jobRunner.ExecuteJob(job, State);
+            Console.WriteLine("Job ran");
             State = updatedState;
             await WriteStateAsync();
 
@@ -199,50 +201,29 @@ public class JobGrain : Grain<JobState>, IJobGrain, IRemindable
 
     public async Task ScheduleExecution(DateTimeOffset? scheduledTime = null)
     {
-        // Calculate when to run the job
-        var nextExecution = scheduledTime ?? State.JobDefinition.GetNextExecutionTime();
-        if (nextExecution.HasValue)
-        {
-            var delay = nextExecution.Value - DateTimeOffset.UtcNow;
-            if (delay < TimeSpan.Zero)
-            {
-                delay = TimeSpan.Zero;
-            }
+        var currentTime = DateTimeOffset.UtcNow;
 
-            _logger.LogInformation(
-                "Scheduling job {JobName} to run at {ExecutionTime}",
-                _name,
-                nextExecution.Value
+        if (scheduledTime == null || scheduledTime < currentTime)
+        {
+            scheduledTime = currentTime;
+        }
+
+        var diff = scheduledTime - currentTime;
+        // if time is within 1 minute, set a timer
+        if (diff <= TimeSpan.FromMinutes(1))
+        {
+            this.RegisterGrainTimer(
+                callback: async _ => await this.TriggerExecution(),
+                new()
+                {
+                    DueTime = diff.Value,
+                    Period = TimeSpan.FromMilliseconds(-1)
+                }
             );
 
-            // Clear any existing reminder
-            try
-            {
-                var reminder = await this.GetReminder(ExecutionReminderName);
-                if (reminder != null)
-                    await this.UnregisterReminder(reminder);
-            }
-            catch (Exception ex) when (ex.Message.Contains("not found"))
-            {
-                throw;
-                // Reminder doesn't exist, which is fine
-            }
-
-            // Register a new reminder
-            await this.RegisterOrUpdateReminder(
-                ExecutionReminderName,
-                delay,
-                TimeSpan.FromMilliseconds(-1) // Don't repeat
-            );
-
-            // Update state
-            State.ScheduledTime = nextExecution.Value;
-            await WriteStateAsync();
         }
-        else
-        {
-            _logger.LogWarning("Could not determine next execution time for job {JobName}", _name);
-        }
+        // otherwise, set a reminder
+
     }
 
     public async Task ScheduleRecurringExecution(TimeSpan period)
