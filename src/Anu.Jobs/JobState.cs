@@ -33,7 +33,7 @@ public class JobState
     /// The triggers that can initiate this job.
     /// </summary>
     [Id(3)]
-    public Triggers Triggers { get; set; } = new Triggers();
+    public JobTriggers Triggers { get; set; } = new JobTriggers();
 
     /// <summary>
     /// Creates a JobContext from this state for passing to the job implementation.
