@@ -42,6 +42,11 @@ public class JobTrigger
     [Id(7)]
     public bool UseExponentialBackoff { get; set; } = false;
 
+    // Last execution time for this trigger
+    [Id(8)]
+    public DateTimeOffset? LastExecution { get; set; }
+
+
     // Validation method
     public bool IsValid()
     {
@@ -93,10 +98,6 @@ public class JobTrigger
 
         return RetryDelay;
     }
-
-    // Last execution time for this trigger
-    [Id(8)]
-    public DateTimeOffset? LastExecution { get; set; }
 
     // Static factory methods for common trigger types
     public static JobTrigger CreateManualTrigger(int maxRetries = 0)
@@ -174,7 +175,7 @@ public class JobTriggers
         {
             var triggerNextTime = trigger.GetNextExecutionTime(lastExecution);
 
-            if (triggerNextTime.HasValue && 
+            if (triggerNextTime.HasValue &&
                 (!nextTime.HasValue || triggerNextTime.Value < nextTime.Value))
             {
                 nextTime = triggerNextTime;
