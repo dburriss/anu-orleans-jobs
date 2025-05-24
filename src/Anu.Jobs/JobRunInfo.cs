@@ -96,7 +96,7 @@ public class JobRunInfo
         StageHistory.Add(transition);
         Stage = newStage;
         LastUpdatedAt = transition.TransitionTime;
-
+        // TODO: not sure this belongs with the recording of state transition
         // Set specific timestamps based on the stage
         switch (newStage)
         {
