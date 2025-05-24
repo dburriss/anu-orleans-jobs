@@ -94,9 +94,11 @@ public class JobRunInfo
         };
 
         StageHistory.Add(transition);
+        // TODO: might want to trancate/summarise history older than X days
+        // TODO: not sure this belongs with the recording of state transition
+
         Stage = newStage;
         LastUpdatedAt = transition.TransitionTime;
-        // TODO: not sure this belongs with the recording of state transition
         // Set specific timestamps based on the stage
         switch (newStage)
         {
