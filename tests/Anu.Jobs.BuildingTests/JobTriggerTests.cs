@@ -3,10 +3,13 @@ namespace Anu.Jobs.BuildingTests;
 public class JobTriggerTests
 {
     [Fact]
-    public void CreateManualTrigger_SetsTypeToManual()
+    public void AddManualTrigger_SetsTypeToManual()
     {
+        // Arrange
+        var triggers = new JobTriggers();
+
         // Act
-        var trigger = JobTrigger.CreateManualTrigger();
+        var trigger = triggers.AddManualTrigger();
 
         // Assert
         Assert.Equal(TriggerType.Manual, trigger.Type);
@@ -21,10 +24,8 @@ public class JobTriggerTests
     {
         // Arrange
         var triggers = new JobTriggers();
-        var trigger = JobTrigger.CreateManualTrigger();
+        var trigger = triggers.AddManualTrigger();
         var executionTime = DateTimeOffset.UtcNow;
-        
-        triggers.Add(trigger);
 
         // Act
         triggers.UpdateLastExecution(trigger.Id, executionTime);
