@@ -1,3 +1,5 @@
+using Orleans;
+
 namespace Anu.Jobs;
 
 [GenerateSerializer]
@@ -10,6 +12,35 @@ public class JobTriggers
     public void Add(JobTrigger trigger)
     {
         _triggers.Add(trigger);
+    }
+
+    // Factory methods that create and add in one step
+    public JobTrigger AddManualTrigger(int maxRetries = 0)
+    {
+        var trigger = JobTrigger.CreateManualTrigger(maxRetries);
+        Add(trigger);
+        return trigger;
+    }
+
+    public JobTrigger AddOneTimeTrigger(DateTime scheduledTime, int maxRetries = 0)
+    {
+        var trigger = JobTrigger.CreateOneTimeTrigger(scheduledTime, maxRetries);
+        Add(trigger);
+        return trigger;
+    }
+
+    public JobTrigger AddIntervalTrigger(TimeSpan interval, int maxRetries = 0)
+    {
+        var trigger = JobTrigger.CreateIntervalTrigger(interval, maxRetries);
+        Add(trigger);
+        return trigger;
+    }
+
+    public JobTrigger AddCronTrigger(string cronExpression, int maxRetries = 0)
+    {
+        var trigger = JobTrigger.CreateCronTrigger(cronExpression, maxRetries);
+        Add(trigger);
+        return trigger;
     }
 
     // Remove a trigger by its ID
@@ -59,4 +90,3 @@ public class JobTriggers
         }
     }
 }
-
