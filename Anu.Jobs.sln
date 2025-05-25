@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Anu.Jobs", "src\Anu.Jobs\An
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{4F84297E-38D6-4417-B693-C8762B3CAA49}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Anu.Jobs.BuildingTests", "tests\Anu.Jobs.BuildingTests\Anu.Jobs.BuildingTests.csproj", "{F74712B4-0E97-4686-AA4E-2A96536D20C7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Anu.Jobs.Tests.Building", "tests\Anu.Jobs.Tests.Building\Anu.Jobs.Tests.Building.csproj", "{F74712B4-0E97-4686-AA4E-2A96536D20C7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
