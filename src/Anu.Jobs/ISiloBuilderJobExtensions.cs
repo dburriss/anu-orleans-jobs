@@ -3,8 +3,17 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Anu.Jobs;
 
+/// <summary>
+/// Provides extension methods for configuring jobs in Orleans silos.
+/// </summary>
 public static class ISiloBuilderJobExtensions
 {
+    /// <summary>
+    /// Adds job support to the Orleans silo by registering job types from the specified assemblies.
+    /// </summary>
+    /// <param name="builder">The silo builder.</param>
+    /// <param name="jobAssemblies">The assemblies to scan for job types. If null, scans all loaded assemblies.</param>
+    /// <returns>The silo builder for method chaining.</returns>
     public static ISiloBuilder AddJobs(this ISiloBuilder builder, params Assembly[] jobAssemblies)
     {
         var assemblies = jobAssemblies is null
@@ -26,6 +35,14 @@ public static class ISiloBuilderJobExtensions
         return builder;
     }
 
+    /// <summary>
+    /// Configures a job to run with the specified timer options.
+    /// </summary>
+    /// <param name="host">The silo builder.</param>
+    /// <param name="jobType">The type of job to configure.</param>
+    /// <param name="options">The timer options for the job.</param>
+    /// <returns>The silo builder for method chaining.</returns>
+    /// <exception cref="ArgumentException">Thrown when interval is less than 1 minute for recurring jobs.</exception>
     public static ISiloBuilder UseJob(
         this ISiloBuilder host,
         Type jobType,
@@ -54,6 +71,13 @@ public static class ISiloBuilderJobExtensions
         return host;
     }
 
+    /// <summary>
+    /// Configures a job to run on a recurring interval.
+    /// </summary>
+    /// <param name="host">The silo builder.</param>
+    /// <param name="jobType">The type of job to configure.</param>
+    /// <param name="interval">The interval between job executions.</param>
+    /// <returns>The silo builder for method chaining.</returns>
     public static ISiloBuilder UseRecurringJob(
         this ISiloBuilder host,
         Type jobType,
@@ -64,6 +88,13 @@ public static class ISiloBuilderJobExtensions
         return host.UseJob(jobType, intervalOptions);
     }
 
+    /// <summary>
+    /// Configures a job of the specified type to run on a recurring interval.
+    /// </summary>
+    /// <typeparam name="TJob">The type of job to configure.</typeparam>
+    /// <param name="host">The silo builder.</param>
+    /// <param name="interval">The interval between job executions.</param>
+    /// <returns>The silo builder for method chaining.</returns>
     public static ISiloBuilder UseRecurringJob<TJob>(this ISiloBuilder host, TimeSpan interval)
         where TJob : IJob
     {
@@ -71,6 +102,13 @@ public static class ISiloBuilderJobExtensions
         return host.UseRecurringJob(jobType, interval);
     }
 
+    /// <summary>
+    /// Configures a job of the specified type to run once after an optional delay.
+    /// </summary>
+    /// <typeparam name="TJob">The type of job to configure.</typeparam>
+    /// <param name="host">The silo builder.</param>
+    /// <param name="delay">The delay before execution. Defaults to 60 seconds if not specified.</param>
+    /// <returns>The silo builder for method chaining.</returns>
     public static ISiloBuilder UseOneTimeJob<TJob>(
         this ISiloBuilder host,
         TimeSpan? delay = null

@@ -8,29 +8,30 @@ namespace Anu.Jobs;
 public class JobState
 {
     /// <summary>
-    /// The definition of the job being executed.
+    /// Gets or sets the definition of the job being executed.
     /// </summary>
     [Id(0)]
     public required JobDefinition JobDefinition { get; set; }
 
     /// <summary>
-    /// Information about the current run of this job.
+    /// Gets or sets information about the current run of this job.
     /// </summary>
     [Id(1)]
     public JobRunInfo CurrentRun { get; internal set; } = new JobRunInfo();
 
     /// <summary>
-    /// Information about the previous run of this job (for recurring jobs).
+    /// Gets or sets information about the previous run of this job (for recurring jobs).
     /// </summary>
     [Id(2)]
     public JobRunInfo? PreviousRun { get; internal set; }
 
     /// <summary>
-    /// Time of next scheduled execution.
+    /// Gets or sets the time of next scheduled execution.
+    /// </summary>
     public DateTimeOffset ScheduledTime { get; internal set; }
 
     /// <summary>
-    /// The triggers that can initiate this job.
+    /// Gets or sets the triggers that can initiate this job.
     /// </summary>
     [Id(3)]
     public JobTriggers Triggers { get; set; } = new JobTriggers();
@@ -38,6 +39,8 @@ public class JobState
     /// <summary>
     /// Creates a JobContext from this state for passing to the job implementation.
     /// </summary>
+    /// <param name="cancellationToken">The cancellation token for the job execution.</param>
+    /// <returns>A new JobContext instance.</returns>
     public JobContext CreateJobContext(CancellationToken cancellationToken = default)
     {
         return new JobContext
