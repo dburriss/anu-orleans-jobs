@@ -12,7 +12,6 @@ public abstract class AcceptanceTestBase : IAsyncLifetime
 {
     protected TestCluster Cluster { get; }
     protected IGrainFactory GrainFactory => Cluster.GrainFactory;
-    protected IJobBuilder JobBuilder => Cluster.ServiceProvider.GetRequiredService<IJobBuilder>();
 
     protected AcceptanceTestBase(OrleansClusterFixture fixture)
     {
@@ -32,10 +31,13 @@ public abstract class AcceptanceTestBase : IAsyncLifetime
     /// <summary>
     /// Creates a unique job grain for testing.
     /// </summary>
-    protected Task<IJobGrain> CreateTestJobAsync<TJob>(string? name = null)
+    protected async Task<IJobGrain> CreateTestJobAsync<TJob>(string? name = null)
         where TJob : class, IJob
     {
         var jobName = name ?? $"{typeof(TJob).Name}_{Guid.NewGuid():N}";
-        return JobBuilder.StartJobAsync<TJob>(jobName);
+        
+        // Create JobBuilder directly instead of getting from DI
+        var jobBuilder = new JobBuilder(GrainFactory);
+        return await jobBuilder.StartJobAsync<TJob>(jobName);
     }
 }
