@@ -7,7 +7,7 @@ namespace Anu.Jobs.Tests.Acceptance.Infrastructure;
 /// <summary>
 /// Base class for acceptance tests providing common Orleans cluster access.
 /// </summary>
-[Collection(OrleansCollection.Name)]
+[Collection(OrleansAcceptanceCollection.Name)]
 public abstract class AcceptanceTestBase : IAsyncLifetime
 {
     protected TestCluster Cluster { get; }
@@ -22,17 +22,17 @@ public abstract class AcceptanceTestBase : IAsyncLifetime
     /// <summary>
     /// Override this method to perform test-specific setup.
     /// </summary>
-    public virtual Task InitializeAsync() => Task.CompletedTask;
+    public virtual ValueTask InitializeAsync() => ValueTask.CompletedTask;
 
     /// <summary>
     /// Override this method to perform test-specific cleanup.
     /// </summary>
-    public virtual Task DisposeAsync() => Task.CompletedTask;
+    public virtual ValueTask DisposeAsync() => ValueTask.CompletedTask;
 
     /// <summary>
     /// Creates a unique job grain for testing.
     /// </summary>
-    protected Task<IJobGrain> CreateTestJobAsync<TJob>(string? name = null) 
+    protected Task<IJobGrain> CreateTestJobAsync<TJob>(string? name = null)
         where TJob : class, IJob
     {
         var jobName = name ?? $"{typeof(TJob).Name}_{Guid.NewGuid():N}";
