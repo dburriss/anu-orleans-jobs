@@ -14,7 +14,7 @@ public sealed class OrleansClusterFixture : IDisposable
     {
         var builder = new TestClusterBuilder()
             .AddSiloBuilderConfigurator<TestSiloConfigurator>();
-        
+
         Cluster = builder.Build();
         Cluster.Deploy();
     }
