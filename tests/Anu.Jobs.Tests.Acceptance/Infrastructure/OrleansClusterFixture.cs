@@ -33,7 +33,8 @@ file sealed class TestSiloConfigurator : ISiloConfigurator
     public void Configure(ISiloBuilder siloBuilder)
     {
         siloBuilder.AddJobs(); // Register job framework
-        siloBuilder.AddMemoryGrainStorage("Default"); // Add default storage provider for JobGrain
+        siloBuilder.AddMemoryGrainStorageAsDefault(); // Add default storage provider for JobGrain
+        siloBuilder.UseInMemoryReminderService();
         siloBuilder.ConfigureServices(services =>
         {
             // Add any test-specific services here

@@ -35,7 +35,7 @@ public abstract class AcceptanceTestBase : IAsyncLifetime
         where TJob : class, IJob
     {
         var jobName = name ?? $"{typeof(TJob).Name}_{Guid.NewGuid():N}";
-        
+
         // Create JobBuilder directly instead of getting from DI
         var jobBuilder = new JobBuilder(GrainFactory);
         return await jobBuilder.StartJobAsync<TJob>(jobName);

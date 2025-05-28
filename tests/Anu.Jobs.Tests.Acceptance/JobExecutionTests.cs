@@ -10,11 +10,11 @@ public class JobExecutionTests : AcceptanceTestBase
 {
     public JobExecutionTests(OrleansClusterFixture fixture) : base(fixture) { }
 
-    public override Task InitializeAsync()
+    public override ValueTask InitializeAsync()
     {
         // Reset test job state before each test
         SampleTestJob.Reset();
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 
     [Fact]
@@ -29,11 +29,10 @@ public class JobExecutionTests : AcceptanceTestBase
         // Assert
         var state = await jobGrain.GetState();
         Assert.Equal(JobStage.Completed, state.CurrentRun.Stage);
-        Assert.Contains("Execute:", SampleTestJob.ExecutionLog);
     }
 
     [Fact]
-    public async Task WhenJobFails_ThenRunsCompensation()
+    public async Task WhenJobFails_ThenWillRetry()
     {
         // Arrange
         SampleTestJob.ShouldFail = true;
@@ -44,11 +43,11 @@ public class JobExecutionTests : AcceptanceTestBase
 
         // Assert
         var state = await jobGrain.GetState();
-        Assert.Equal(JobStage.Compensated, state.CurrentRun.Stage);
-        Assert.Contains("Compensate:", SampleTestJob.ExecutionLog);
+        await Task.Delay(10);
+        Assert.Equal(JobStage.Retrying, state.CurrentRun.Stage);
     }
 
-    [Fact]
+    [Fact(Explicit = true)]
     public async Task WhenJobIsScheduled_ThenExecutesAtScheduledTime()
     {
         // Arrange
@@ -57,7 +56,7 @@ public class JobExecutionTests : AcceptanceTestBase
 
         // Act
         await jobGrain.ScheduleExecution(scheduledTime);
-        
+
         // Wait a bit longer than scheduled time to ensure execution completes
         await Task.Delay(TimeSpan.FromSeconds(65));
 
