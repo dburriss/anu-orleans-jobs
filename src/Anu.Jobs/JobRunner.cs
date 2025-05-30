@@ -34,7 +34,7 @@ namespace Anu.Jobs
             catch (Exception ex)
             {
                 // Handle failure
-                state.MarkAsFailed(ex);
+                state.MarkAsErrored(ex);
 
                 // Note: We don't decide about retry here, we just return the updated state
                 // The grain will decide if retry is appropriate
@@ -68,6 +68,7 @@ namespace Anu.Jobs
             {
                 // Handle compensation failure
                 state.CurrentRun.RecordError(ex);
+                state.MarkAsFailed(ex);
             }
 
             // Return the updated state to the caller (the grain)

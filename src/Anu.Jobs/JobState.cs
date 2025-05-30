@@ -126,4 +126,16 @@ public class JobState
     {
         CurrentRun.RecordStageTransition(JobStage.Compensated, "Job successfully compensated");
     }
+
+    /// <summary>
+    /// Marks an error in the attempt and sets JobStage to Error
+    /// </summary>
+    internal void MarkAsErrored(Exception exception)
+    {
+        CurrentRun.RecordError(exception);
+        CurrentRun.RecordStageTransition(
+            JobStage.Error,
+            $"Error on retry attempt {CurrentRun.RetryCount}"
+        );
+    }
 }

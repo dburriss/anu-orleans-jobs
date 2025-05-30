@@ -26,7 +26,7 @@ public enum JobStage
     Completed,
 
     /// <summary>
-    /// The job has failed during execution. Temporary state.
+    /// The job has failed during execution and . Final state.
     /// </summary>
     Failed,
 
@@ -56,7 +56,7 @@ public enum JobStage
     Suspended,
 
     /// <summary>
-    /// The job has errored out completely and could not even compensate. Final state.
+    /// The job has errored out completely and could not even compensate. Temporary state.
     /// </summary>
     Error,
 
