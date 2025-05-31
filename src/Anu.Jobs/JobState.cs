@@ -61,13 +61,22 @@ public class JobState
     }
 
     /// <summary>
+    /// Checks if the job can be retried without modifying state.
+    /// </summary>
+    /// <returns>True if the job can be retried; false if max retries have been reached.</returns>
+    public bool CanRetry()
+    {
+        return CurrentRun.RetryCount < JobDefinition.MaxRetries;
+    }
+
+    /// <summary>
     /// Updates the job state when a retry is needed.
     /// </summary>
     /// <returns>True if the job can be retried; false if max retries have been reached.</returns>
     public bool PrepareForRetry()
     {
         // Check if we can retry before making any state changes
-        if (CurrentRun.RetryCount >= JobDefinition.MaxRetries)
+        if (!CanRetry())
         {
             return false;
         }
