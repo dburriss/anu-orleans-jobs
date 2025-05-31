@@ -85,7 +85,7 @@ public class JobGrain : Grain<JobState>, IJobGrain, IRemindable
             await WriteStateAsync();
 
             // Handle the result based on the updated state
-            if (State.CurrentRun.Stage == JobStage.Failed && State.PrepareForRetry())
+            if (State.CurrentRun.Stage == JobStage.Error && State.PrepareForRetry())
             {
                 _logger.LogInformation(
                     "Scheduling retry for job {JobName}, attempt {Attempt}",

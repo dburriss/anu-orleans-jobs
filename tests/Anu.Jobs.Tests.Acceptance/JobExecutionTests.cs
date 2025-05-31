@@ -32,7 +32,7 @@ public class JobExecutionTests : AcceptanceTestBase
     }
 
     [Fact]
-    public async Task WhenJobFails_ThenWillRetry()
+    public async Task WhenJobFailsWithMaxRetriesIsZero_ThenWillFail()
     {
         // Arrange
         SampleTestJob.ShouldFail = true;
@@ -44,7 +44,7 @@ public class JobExecutionTests : AcceptanceTestBase
         // Assert
         var state = await jobGrain.GetState();
         await Task.Delay(10);
-        Assert.Equal(JobStage.Retrying, state.CurrentRun.Stage);
+        Assert.Equal(JobStage.Failed, state.CurrentRun.Stage);
     }
 
     [Fact(Explicit = true)]
