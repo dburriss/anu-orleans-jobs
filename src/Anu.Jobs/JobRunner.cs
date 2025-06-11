@@ -34,8 +34,14 @@ namespace Anu.Jobs
             catch (Exception ex)
             {
                 // Handle failure
-                state.MarkAsErrored(ex);
-
+                if (state.CanRetry())
+                {
+                    state.MarkAsErrored(ex);
+                }
+                else
+                {
+                    state.MarkAsFailed(ex);
+                }
                 // Note: We don't decide about retry here, we just return the updated state
                 // The grain will decide if retry is appropriate
             }
