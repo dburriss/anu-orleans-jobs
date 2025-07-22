@@ -42,8 +42,8 @@ public class JobExecutionTests : AcceptanceTestBase
         await jobGrain.TriggerExecution();
 
         // Assert
-        var state = await jobGrain.GetState();
         await Task.Delay(10);
+        var state = await jobGrain.GetState();
         Assert.Equal(JobStage.Failed, state.CurrentRun.Stage);
     }
 
